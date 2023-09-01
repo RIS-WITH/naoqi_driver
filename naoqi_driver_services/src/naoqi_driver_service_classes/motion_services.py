@@ -3,6 +3,7 @@ from service_abstractclass import AbstractService
 from nao_interaction_msgs.srv import SetBreathEnabled, SetBreathEnabledResponse
 from nao_interaction_msgs.srv import GoToPose, GoToPoseResponse
 from nao_interaction_msgs.srv import MotionSetAngles, MotionSetAnglesResponse
+from nao_interaction_msgs.srv import MotionInterpolate, MotionInterpolateResponse
 from std_srvs.srv import Empty, EmptyResponse
 import utils as ut
 import tf
@@ -13,8 +14,8 @@ class MotionServices(AbstractService):
         super(MotionServices, self).__init__(
             proxy_name="ALMotion",
             ns=super_ns+"/motion",
-            topics=["move_to", "rest", "set_breath_enabled", "wake_up", "set_angles", "angle_interpolation_with_speed", "neutral"],
-            service_types=[GoToPose, Empty, SetBreathEnabled, Empty, MotionSetAngles, MotionSetAngles, Empty])
+            topics=["move_to", "rest", "set_breath_enabled", "wake_up", "set_angles", "angle_interpolation", "angle_interpolation_with_speed", "neutral"],
+            service_types=[GoToPose, Empty, SetBreathEnabled, Empty, MotionSetAngles, MotionInterpolate, MotionSetAngles, Empty])
         self.listener = tf.TransformListener()
 
     def transform(self, pose_stamped, target_frame):
@@ -71,6 +72,22 @@ class MotionServices(AbstractService):
         else:
             self.proxy.angleInterpolationWithSpeed(req.names, req.angles, req.max_speed_fraction)
         return MotionSetAnglesResponse()
+
+    def angle_interpolation_callback(self, req):
+        #if len(req.names) != len(req.angles):
+        #    rospy.logerr("Size of names different from size of angles")
+        #else:
+        angles = []
+        for angle in req.angles:
+            angles.append(angle.values)
+        times = []
+        for t in req.times:
+            times.append(t.values)
+
+        print(req.names, angles, times)
+
+        self.proxy.angleInterpolation(req.names, angles, times, req.is_absolute)
+        return MotionInterpolateResponse()
 
     def neutral_callback(self, _):
         self.proxy.setAngles(["Body"], [0.0193678308,-0.204438269,1.24219799,0.0365650989,-1.11843324,-0.526670039,-1.03511024,0.61011523,-2.51969592e-08,-0.0573792122,-0.0442125686,1.31760716,-0.0351500735,1.37310743,0.613771081,0.806987405,0.688877523,0,0,0], 0.1)
