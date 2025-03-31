@@ -1,12 +1,13 @@
 import rospy
-from service_abstractclass import AbstractService
+from .service_abstractclass import AbstractService
 from std_srvs.srv import Empty, EmptyResponse
 from nao_interaction_msgs.srv import String, StringResponse
 
 
 class TabletServices(AbstractService):
-    def __init__(self, super_ns):
+    def __init__(self, session, super_ns):
         super(TabletServices, self).__init__(
+            session=session,
             proxy_name="ALTabletService",
             ns=super_ns+"/tablet",
             topics=["show_webview", "load_url", "execute_js"],

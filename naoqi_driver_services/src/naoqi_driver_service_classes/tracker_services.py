@@ -1,5 +1,5 @@
 import rospy
-from service_abstractclass import AbstractService
+from .service_abstractclass import AbstractService
 from std_srvs.srv import Empty, EmptyResponse
 from nao_interaction_msgs.srv import SetTrackerMode, SetTrackerModeResponse
 from nao_interaction_msgs.srv import SetTrackerTarget, SetTrackerTargetResponse
@@ -9,8 +9,9 @@ from nao_interaction_msgs.srv import TrackerLookAt, TrackerLookAtResponse
 
 
 class TrackerServices(AbstractService):
-    def __init__(self, super_ns):
+    def __init__(self, session, super_ns):
         super(TrackerServices, self).__init__(
+            session=session,
             proxy_name="ALTracker",
             ns=super_ns+"/tracker",
             topics=["look_at", "point_at", "register_target", "set_mode", "stop_tracker", "track", "unregister_all_targets"],

@@ -1,17 +1,18 @@
 import rospy
-from service_abstractclass import AbstractService
+from .service_abstractclass import AbstractService
 from nao_interaction_msgs.srv import SetBreathEnabled, SetBreathEnabledResponse
 from nao_interaction_msgs.srv import GoToPose, GoToPoseResponse
 from nao_interaction_msgs.srv import MotionSetAngles, MotionSetAnglesResponse
 from nao_interaction_msgs.srv import MotionInterpolate, MotionInterpolateResponse
 from std_srvs.srv import Empty, EmptyResponse
-import utils as ut
+from .utils import get_yaw
 import tf
 
 
 class MotionServices(AbstractService):
-    def __init__(self, super_ns):
+    def __init__(self, session, super_ns):
         super(MotionServices, self).__init__(
+            session=session,
             proxy_name="ALMotion",
             ns=super_ns+"/motion",
             topics=["move_to", "rest", "set_breath_enabled", "wake_up", "set_angles", "angle_interpolation", "angle_interpolation_with_speed", "neutral"],
@@ -33,7 +34,7 @@ class MotionServices(AbstractService):
     def move_to_callback(self, req):
         req.pose = self.transform(req.pose, "base_footprint")
 
-        yaw = ut.get_yaw(req.pose.pose)
+        yaw = get_yaw(req.pose.pose)
 
         rospy.loginfo("going to move x: {x} y: {y} z: {z} yaw: {yaw}".format(
             x=req.pose.pose.position.x,

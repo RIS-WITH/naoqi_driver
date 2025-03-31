@@ -1,10 +1,11 @@
-from service_abstractclass import AbstractService
+from .service_abstractclass import AbstractService
 from nao_interaction_msgs.srv import Say, SayResponse
 
 
 class AnimatedSpeechServices(AbstractService):
-    def __init__(self, super_ns):
+    def __init__(self, session, super_ns):
         super(AnimatedSpeechServices, self).__init__(
+            session=session,
             proxy_name="ALAnimatedSpeech",
             ns=super_ns+"/animated_speech",
             topics=["say"],

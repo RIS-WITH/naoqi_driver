@@ -1,11 +1,12 @@
-from service_abstractclass import AbstractService
+from .service_abstractclass import AbstractService
 from nao_interaction_msgs.srv import BehaviorManagerControl, BehaviorManagerControlResponse
 from nao_interaction_msgs.srv import BehaviorManagerInfo, BehaviorManagerInfoResponse
 
 
 class BehaviourManagerServices(AbstractService):
-    def __init__(self, super_ns):
+    def __init__(self, session, super_ns):
         super(BehaviourManagerServices, self).__init__(
+            session=session,
             proxy_name="ALBehaviorManager",
             ns=super_ns+"/behaviour_manager",
             topics=["get_installed_behaviors", "get_running_behaviors", "start_behaviour", "stop_behaviour"],

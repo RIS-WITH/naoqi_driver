@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import rospy
-import naoqi_interface_classes.connection as con
+import qi
+import sys
 
 from naoqi_driver_service_classes.tts_services import TTSServices
 from naoqi_driver_service_classes.animated_speech_services import AnimatedSpeechServices
@@ -14,21 +15,31 @@ from naoqi_driver_service_classes.led_services import LedServices
 
 
 class ServicesNode(object):
-    def __init__(self, name):
+    def __init__(self, name, session):
         rospy.loginfo("Starting %s ..." % name)
         super_ns = rospy.get_param("~super_ns", "/naoqi_driver")
-        TTSServices(super_ns)
-        AnimatedSpeechServices(super_ns)
-        MotionServices(super_ns)
-        BehaviourManagerServices(super_ns)
-        TrackerServices(super_ns)
-        TabletServices(super_ns)
-        LedServices(super_ns)
+        TTSServices(session, super_ns)
+        AnimatedSpeechServices(session, super_ns)
+        MotionServices(session, super_ns)
+        BehaviourManagerServices(session, super_ns)
+        TrackerServices(session, super_ns)
+        TabletServices(session, super_ns)
+        LedServices(session, super_ns)
         rospy.loginfo("... done")
 
 if __name__ == "__main__":
     rospy.init_node("naoqi_driver_service_node")
-    broker = con.create_broker(rospy.get_param("~nao_ip", "pepper"), rospy.get_param("~nao_port", 9559))
-    s = ServicesNode(rospy.get_name())
+    session = qi.Session()
+    NAO_IP = rospy.get_param("~nao_ip", "pepper")
+    PORT = rospy.get_param("~nao_port", 9559)
+
+    try:
+        session.connect(f"tcp://{NAO_IP}:{PORT}")
+    except RuntimeError:
+        print(f"Can't connect to Naoqi at {NAO_IP}:{PORT}.")
+        sys.exit(1)
+
+    s = ServicesNode(rospy.get_name(), session)
     rospy.spin()
-    con.shutdown_broker(broker)
+
+    session.close()

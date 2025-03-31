@@ -1,5 +1,5 @@
 import rospy
-from service_abstractclass import AbstractService
+from .service_abstractclass import AbstractService
 from std_srvs.srv import Empty, EmptyResponse
 from nao_interaction_msgs.srv import String, StringResponse, Float, FloatResponse
 from nao_interaction_msgs.srv import LedsCreateGroup, LedsCreateGroupResponse
@@ -12,8 +12,9 @@ from nao_interaction_msgs.srv import LedsList, LedsListResponse
 
 
 class LedServices(AbstractService):
-    def __init__(self, super_ns):
+    def __init__(self, session, super_ns):
         super(LedServices, self).__init__(
+            session=session,
             proxy_name="ALLeds",
             ns=super_ns+"/leds",
             topics=["create_group", "ear_set_angle", "fade", "fade_rgb", "get_intensity", "list_groups", "list_leds", "on", "off", "reset", "random_eyes", "rasta", "rotate_eyes", "set_intensity"],

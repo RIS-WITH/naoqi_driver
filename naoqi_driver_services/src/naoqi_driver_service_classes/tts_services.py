@@ -1,12 +1,13 @@
-from service_abstractclass import AbstractService
+from .service_abstractclass import AbstractService
 from nao_interaction_msgs.srv import Say, SayResponse
 from std_srvs.srv import Empty, EmptyResponse
 from nao_interaction_msgs.srv import String, StringResponse
 
 
 class TTSServices(AbstractService):
-    def __init__(self, super_ns):
+    def __init__(self, session, super_ns):
         super(TTSServices, self).__init__(
+            session=session,
             proxy_name="ALTextToSpeech",
             ns=super_ns+"/tts",
             topics=["say", "stop_all", "set_language"],
